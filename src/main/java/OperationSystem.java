@@ -15,7 +15,12 @@ public class OperationSystem {
   private static String DEFAULT_OS_PATH =
       new File((".")).getAbsolutePath() + "/src/main/resources/os.bin";
 
-
+  /**
+   * @param bootFile 引导文件地址，如果为null则使用默认地址
+   * @param osPath 生成的软盘文件地址，如果为null则使用默认地址
+   * @return 生成的软盘文件地址
+   * @throws IOException 文件操作可能抛出的IOException
+   */
   public String buildOSFile(@Nullable String bootFile, @Nullable String osPath) throws IOException {
     if (bootFile == null) {
       bootFile = DEFAULT_BOOT_PATH;
@@ -23,7 +28,7 @@ public class OperationSystem {
     if (osPath == null) {
       osPath = DEFAULT_OS_PATH;
     }
-    return new Floopy().makeFloopyByBoot(bootFile, osPath);
+    return FLOPPY.makeFloopyByBoot(bootFile, osPath);
   }
 
   public static void main(String[] args) throws IOException {
