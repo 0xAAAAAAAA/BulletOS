@@ -182,4 +182,5 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-!buildtools
+# 提交构建工具
+!buildtools/
