@@ -1,10 +1,8 @@
-;bullet-os
-;TAB=4
-;生成引导装载程序机器码，大小为512字节,装载到0x8000地址
+; bullet-os
+; TAB=4
+; 生成引导扇区的打印程序二进制文件
 
-org  0x7c00;
-
-LOAD_ADDR  EQU  0X8000
+		ORG		0x7c00			; 指明程序装载地址
 
 ; 标准FAT12格式软盘专用的代码 Stand FAT12 format floppy code
 
@@ -29,33 +27,34 @@ LOAD_ADDR  EQU  0X8000
 		DB		"FAT12   "		; 磁盘格式名称（必须为8字节，不足填空格），文件系统类型
 		RESB	18				    ; 先空出18字节
 
+; 程序主体
+
 entry:
-    mov  ax, 0
-    mov  ss, ax
-    mov  ds, ax
-    mov  es, ax
-    mov  si, ax
+		MOV		AX,0			    ; 初始化寄存器
+		MOV		SS,AX
+		MOV		SP,0x7c00
+		MOV		DS,AX
+		MOV		ES,AX
 
-readFloppy:
-    mov          CH, 1          ; CH 用来存储柱面号
-    mov          DH, 0          ; DH 用来存储磁头号
-    mov          CL, 2          ; CL 用来存储扇区号
-
-    mov          BX, LOAD_ADDR  ; ES:BX 数据存储缓冲区
-
-    mov          AH, 0x02       ; AH = 02 表示要做的是读盘操作
-    mov          AL,  1         ; AL 表示要练习读取几个扇区
-    mov          DL, 0          ; 驱动器编号，一般我们只有一个软盘驱动器，所以写死
-                                ; 为0
-    INT          0x13           ; 调用BIOS中断实现磁盘读取功能
-
-    JC           fin
-
-    jmp          LOAD_ADDR
-
+		MOV		SI,msg
+putloop:
+		MOV		AL,[SI]
+		ADD		SI,1			    ; 给SI加1
+		CMP		AL,0
+		JE		fin
+		MOV		AH,0x0e			  ; 显示一个文字
+		MOV		BX,15			    ; 指定字符颜色
+		INT		0x10			    ; 调用显卡BIOS
+		JMP		putloop
 fin:
-    HLT
-    jmp  fin
+		HLT						      ; 让CPU停止，等待指令
+		JMP		fin				    ; 无限循环
+
+msg:
+		DB		0x0a, 0x0a		; 换行两次
+		DB		"hello, world!"
+		DB		0x0a			    ; 换行
+		DB		0
 
 ;原书中使用下面指令，但这个在nasm中不通过，故使用times
 ;RESB   0x1fe - $

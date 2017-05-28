@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author Bullet
  * @time 2017-05-26 10:51
  */
-public class FLOPPY {
+public class Floppy {
 
   public static int BYTES_NUM_PER_SECTOR = 512;              // 每扇区字节数
   public static int SURFACE_NUM_PER_FLOPPY = 2;              // 每磁盘磁面数
@@ -19,18 +19,18 @@ public class FLOPPY {
   public static int SECTOR_NUM_PER_CYLINDER = 18;            // 每磁道扇区数
   public static int FLOOPY_SIZE =
       BYTES_NUM_PER_SECTOR * SURFACE_NUM_PER_FLOPPY * CYLINDER_NUM_PER_SURFACE
-          * SECTOR_NUM_PER_CYLINDER;                          // 软盘大小
+          * SECTOR_NUM_PER_CYLINDER;                         // 软盘大小
   public static int SECTOR_TOTAL_NUM =
       SURFACE_NUM_PER_FLOPPY * CYLINDER_NUM_PER_SURFACE * SECTOR_NUM_PER_CYLINDER;
 
-  private byte[][] sectorData = null;                         // 保存扇区数据
+  private byte[][][][] sectorData = null;                    // 保存扇区数据
 
   /**
    * 初始化构造器，默认为全0数据
    */
-  public FLOPPY() {
-    sectorData = new byte[SURFACE_NUM_PER_FLOPPY * CYLINDER_NUM_PER_SURFACE
-        * SECTOR_NUM_PER_CYLINDER][BYTES_NUM_PER_SECTOR];
+  public Floppy() {
+    sectorData = new byte[SURFACE_NUM_PER_FLOPPY][CYLINDER_NUM_PER_SURFACE]
+        [SECTOR_NUM_PER_CYLINDER][BYTES_NUM_PER_SECTOR];
   }
 
   /**
@@ -45,10 +45,7 @@ public class FLOPPY {
     if (!isParametersCorrect(surface, cylinder, sector)) {
       return null;
     }
-    return sectorData[
-        surface * SECTOR_NUM_PER_CYLINDER * CYLINDER_NUM_PER_SURFACE * SECTOR_NUM_PER_CYLINDER
-            + cylinder * CYLINDER_NUM_PER_SURFACE * SECTOR_NUM_PER_CYLINDER
-            + sector * SECTOR_NUM_PER_CYLINDER].clone();
+    return sectorData[surface][cylinder][sector].clone();
   }
 
   /**
@@ -79,10 +76,7 @@ public class FLOPPY {
     if (!isParametersCorrect(b, surface, cylinder, sector)) {
       return false;
     }
-    sectorData[
-        surface * SECTOR_NUM_PER_CYLINDER * CYLINDER_NUM_PER_SURFACE * SECTOR_NUM_PER_CYLINDER
-            + cylinder * CYLINDER_NUM_PER_SURFACE * SECTOR_NUM_PER_CYLINDER
-            + sector * SECTOR_NUM_PER_CYLINDER] = b;
+    sectorData[surface][cylinder][sector] = b;
     return true;
   }
 
@@ -110,9 +104,15 @@ public class FLOPPY {
    */
   public String buildFloppyFile(@NotNull String floppyFilePath) throws IOException {
     BufferedOutputStream floppyOut = new BufferedOutputStream(new FileOutputStream(floppyFilePath));
-    for (int i = 0; i < SECTOR_TOTAL_NUM; i++) {
-      floppyOut.write(this.sectorData[i]);
+    for (int i = 0; i < SURFACE_NUM_PER_FLOPPY; i++) {
+      for (int j = 0; j < CYLINDER_NUM_PER_SURFACE; j++) {
+        for (int k = 0; k < SECTOR_NUM_PER_CYLINDER; k++) {
+          floppyOut.write(sectorData[i][j][k]);
+        }
+      }
     }
+    floppyOut.flush();
+    floppyOut.close();
     return floppyFilePath;
   }
 
@@ -124,7 +124,7 @@ public class FLOPPY {
    * @return 生成的软盘文件地址
    * @throws IOException 文件操作过程中可能出现的IOException
    */
-  public static String makeFloopyByBoot(@NotNull String bootFilePath, @NotNull String osFilePath)
+  public static String makeFloppyByBoot(@NotNull String bootFilePath, @NotNull String osFilePath)
       throws IOException {
     BufferedInputStream bootIn = new BufferedInputStream(new FileInputStream(bootFilePath));
     BufferedOutputStream osOut = new BufferedOutputStream(new FileOutputStream(osFilePath));

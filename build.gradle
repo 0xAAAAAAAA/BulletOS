@@ -16,14 +16,38 @@ dependencies {
 ext {
     nasmDir = file('.').absolutePath + "/buildtools/nasm/nasm-2.14rc0/"
     nasmBin = nasmDir + "nasm.exe"
+
+    bootHelloPath = file('.').absolutePath + "/src/main/assm/bootHello.asm"
+    bootHelloOutPath = file('.').absolutePath + "/src/main/resources" + '/bootHello.bin'
+
     bootPath = file('.').absolutePath + "/src/main/assm/boot.asm"
-    bootGenPath = file('.').absolutePath + "/src/main/resources" + '/boot.bin'
+    bootOutPath = file('.').absolutePath + "/src/main/resources" + '/boot.bin'
+
+    kernelPath = file('.').absolutePath + "/src/main/assm/kernel.asm"
+    kernelOutPath  = file('.').absolutePath + "/src/main/resources" + '/kernel.bin'
 }
 
-task buildFloopy {
+boolean nasmAssmFile(inPath, outPath) {
+    Runtime rt = Runtime.getRuntime()
+    def cmdarray = [nasmBin, inPath, '-o', outPath] as String []
+    rt.exec(cmdarray)
+}
+
+task buildHelloBoot {
     doLast {
-        Runtime rt = Runtime.getRuntime()
-        def cmdarray = [ nasmBin, bootPath, '-o', bootGenPath] as String []
-        rt.exec(cmdarray)
+        nasmAssmFile(bootHelloPath, bootHelloOutPath)
     }
 }
+
+task buildBoot {
+    doLast {
+        nasmAssmFile(bootPath, bootOutPath)
+    }
+}
+
+task buildKernel {
+    doLast {
+        nasmAssmFile(kernelPath, kernelOutPath)
+    }
+}
+
