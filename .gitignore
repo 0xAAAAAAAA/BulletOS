@@ -183,4 +183,5 @@ Mkfile.old
 dkms.conf
 
 # 提交构建工具
-!buildtools/
+*.bin
+*.img

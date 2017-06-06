@@ -76,7 +76,7 @@ public class Floppy {
     if (!isParametersCorrect(b, surface, cylinder, sector)) {
       return false;
     }
-    sectorData[surface][cylinder][sector] = b;
+    sectorData[surface][cylinder][sector] = b.clone();
     return true;
   }
 
@@ -89,7 +89,7 @@ public class Floppy {
    * @param sector 扇区号
    */
   private boolean isParametersCorrect(byte[] b, int surface, int cylinder, int sector) {
-    if ((b == null || b.length != 512) || isParametersCorrect(surface, cylinder, sector)) {
+    if ((b == null || b.length != 512) || !isParametersCorrect(surface, cylinder, sector)) {
       return false;
     }
     return true;
@@ -135,11 +135,11 @@ public class Floppy {
 
     // 写入FAT表1和表2， 各9个扇区，两表完全相同
     for (int i = 0; i < 2; i++) {
-      osOut.write(0xF0);
-      osOut.write(0xFF);
-      osOut.write(0xFF);
+      osOut.write((byte) 0xF0);
+      osOut.write((byte) 0xFF);
+      osOut.write((byte) 0xFF);
       for (int j = 3; j < 9 * BYTES_NUM_PER_SECTOR; j++) {
-        osOut.write(0x00);
+        osOut.write((byte) 0x00);
       }
     }
 
@@ -147,7 +147,7 @@ public class Floppy {
     for (int i = 19;
         i < SECTOR_NUM_PER_CYLINDER * CYLINDER_NUM_PER_SURFACE * SURFACE_NUM_PER_FLOPPY; i++) {
       for (int j = 0; j < BYTES_NUM_PER_SECTOR; j++) {
-        osOut.write(0x00);
+        osOut.write((byte) 0x00);
       }
     }
 
