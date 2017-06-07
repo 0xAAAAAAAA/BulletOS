@@ -39,7 +39,7 @@ entry:
 readFloppy:
     mov          CH, 1          ; CH 用来存储柱面号(0-79)
     mov          DH, 0          ; DH 用来存储磁头号(0-1)
-    mov          CL, 2          ; CL 用来存储扇区号(1-18)
+    mov          CL, 2          ; CL 用来存储扇区号(1-18)（java代码中对应为1）
 
     mov          BX, LOAD_ADDR  ; ES:BX 数据存储缓冲区
 

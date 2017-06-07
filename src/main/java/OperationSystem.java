@@ -65,7 +65,7 @@ public class OperationSystem {
 
     Floppy floppy = new Floppy();
     floppy.writeSector(bootData, 0, 0, 0);
-    floppy.writeSector(kernelData, 0, 2, 1);
+    floppy.writeSector(kernelData, 0, 1, 1);
     floppy.buildFloppyFile(bulletOSPath);
 
     return true;

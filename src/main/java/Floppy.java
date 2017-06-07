@@ -104,8 +104,9 @@ public class Floppy {
    */
   public String buildFloppyFile(@NotNull String floppyFilePath) throws IOException {
     BufferedOutputStream floppyOut = new BufferedOutputStream(new FileOutputStream(floppyFilePath));
-    for (int i = 0; i < SURFACE_NUM_PER_FLOPPY; i++) {
-      for (int j = 0; j < CYLINDER_NUM_PER_SURFACE; j++) {
+    // !注意：软盘的读写顺序是柱面->磁道->扇区，即C0-HO-S18 -> C0-H1-S1
+    for (int j = 0; j < CYLINDER_NUM_PER_SURFACE; j++) {
+      for (int i = 0; i < SURFACE_NUM_PER_FLOPPY; i++) {
         for (int k = 0; k < SECTOR_NUM_PER_CYLINDER; k++) {
           floppyOut.write(sectorData[i][j][k]);
         }
